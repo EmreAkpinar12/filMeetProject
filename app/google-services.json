@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1066624163788",
+    "project_id": "filmeet-eb033",
+    "storage_bucket": "filmeet-eb033.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1066624163788:android:e438afb482eeeef28fc769",
+        "android_client_info": {
+          "package_name": "com.emreakpinar.filmeet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBA4hBtfnDIh2gwqJg3KBkAvsGQ656syWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

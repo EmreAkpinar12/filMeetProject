@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/kullaniciFragment">
+
+    <fragment
+        android:id="@+id/kullaniciFragment"
+        android:name="com.emreakpinar.filmeet.view.kullaniciFragment"
+        android:label="fragment_kullanici"
+        tools:layout="@layout/fragment_kullanici" >
+        <action
+            android:id="@+id/action_kullaniciFragment_to_anasayfaFragment"
+            app:destination="@id/anasayfaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/anasayfaFragment"
+        android:name="com.emreakpinar.filmeet.view.anasayfaFragment"
+        android:label="anasayfa_Fragment"
+        tools:layout="@layout/fragment_anasayfa">
+        <action
+            android:id="@+id/action_anasayfaFragment_to_kullaniciFragment"
+            app:destination="@id/kullaniciFragment" />
+        <action
+            android:id="@+id/action_anasayfaFragment_to_filmDetayFragment"
+            app:destination="@id/filmDetayFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/filmDetayFragment"
+        android:name="com.emreakpinar.filmeet.view.filmDetayFragment"
+        android:label="fragment_film_detay"
+        tools:layout="@layout/fragment_film_detay" >
+        <argument
+            android:name="filmId"
+            app:argType="integer" />
+    </fragment>
+</navigation>

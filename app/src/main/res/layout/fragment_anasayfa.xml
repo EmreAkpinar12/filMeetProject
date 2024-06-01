@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipeRefreshLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.anasayfaFragment">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.anasayfaFragment"
+        >
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/filmRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/menu_svgrepo_com"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filmRecyclerView" />
+
+    <ProgressBar
+        android:id="@+id/filmlerYukleniyor"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/filmRecyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/filmRecyclerView"
+        app:layout_constraintStart_toStartOf="@+id/filmRecyclerView"
+        app:layout_constraintTop_toTopOf="@+id/filmRecyclerView" />
+
+    <TextView
+        android:id="@+id/filmHataMesajı"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tekrar deneyiniz."
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/filmRecyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/filmRecyclerView"
+        app:layout_constraintTop_toTopOf="@+id/filmRecyclerView" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
