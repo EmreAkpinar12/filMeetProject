@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.emreakpinar.filmeet.model.Film
+import com.emreakpinar.filmeet.model.Filmler
+import com.emreakpinar.filmeet.model.MovieItem
+import com.google.firebase.firestore.auth.User
 import kotlin.concurrent.Volatile
 
 
-@Database(entities = [Film::class], version = 1)
+@Database(entities = [MovieItem::class], version = 1 , exportSchema = false)
 abstract class filmDataBase : RoomDatabase(){
     abstract  fun  filmDao():filmDAO
 

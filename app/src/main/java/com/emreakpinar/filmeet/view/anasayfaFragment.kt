@@ -1,176 +1,141 @@
 package com.emreakpinar.filmeet.view
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.PopupMenu
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emreakpinar.filmeet.R
 import com.emreakpinar.filmeet.ViewModel.anasayfaViewModel
-import com.emreakpinar.filmeet.adapter.filmRecyclerAdapter
+import com.emreakpinar.filmeet.adapter.FilmRecyclerAdapter
+import com.emreakpinar.filmeet.adapter.MovieClickListener
 import com.emreakpinar.filmeet.databinding.FragmentAnasayfaBinding
-import com.emreakpinar.filmeet.model.Film
-import com.emreakpinar.filmeet.model.Movie
-import com.emreakpinar.filmeet.service.filmAPI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-
-class anasayfaFragment : Fragment(),PopupMenu.OnMenuItemClickListener {
+class anasayfaFragment : Fragment(), PopupMenu.OnMenuItemClickListener, MovieClickListener {
+    private val viewModel: anasayfaViewModel by viewModels()
+    private lateinit var filmRecyclerAdapter: FilmRecyclerAdapter
 
     private var _binding: FragmentAnasayfaBinding? = null
-
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: anasayfaViewModel
-    private val filmRecyclerAdapter = filmRecyclerAdapter(Movie())
-
-    private lateinit var popup:PopupMenu
+    private lateinit var popup: PopupMenu
     private lateinit var auth: FirebaseAuth
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        auth= Firebase.auth
-
-        }
-
+        auth = Firebase.auth
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentAnasayfaBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel=ViewModelProvider(this)[anasayfaViewModel::class.java]
-        viewModel.refreshData()
-
-binding.filmRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-
+        binding.filmRecyclerView.layoutManager = LinearLayoutManager(context)
+        filmRecyclerAdapter = FilmRecyclerAdapter(emptyList(), this)
         binding.filmRecyclerView.adapter = filmRecyclerAdapter
+
+        viewModel.getMovieList()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.filmRecyclerView.visibility = View.GONE
             binding.filmlerYukleniyor.visibility = View.VISIBLE
             binding.filmHataMesaj.visibility = View.GONE
-            viewModel.refreshDataFromInternet()
+            viewModel.getMovieList()
             binding.swipeRefreshLayout.isRefreshing = false
-
-
-            binding.floatingActionButton.setOnClickListener{floatingButtonTiklandi(it)}
-
-
         }
         observeLiveData()
 
-    }
+        binding.floatingActionButton.setOnClickListener { floatingButtonTiklandi(it) }
 
 
-
-    private fun observeLiveData (){
-
-        viewModel.filmler.observe(viewLifecycleOwner){
-
-           filmRecyclerAdapter.filmListesiGuncelle(it)
-Log.e("anasayfa",it.toString())
-            binding.filmRecyclerView.visibility  = View.VISIBLE
+        binding.myFavorites.setOnClickListener {
+            val action = anasayfaFragmentDirections.actionAnasayfaFragmentToFavoriteFragment()
+            findNavController().navigate(action)
         }
 
+        binding.eslesme.setOnClickListener {
+            findNavController().navigate(R.id.action_anasayfaFragment_to_usersFragment)
+        }
+        binding.friends.setOnClickListener {
 
-        viewModel.filmHataMesaji.observe(viewLifecycleOwner){
+            findNavController().navigate(R.id.action_usersFragment_to_friendsFragment)
 
-            if (it) {
+        }
+    }
 
-                binding.filmHataMesaj.visibility=View.VISIBLE
-                binding.filmRecyclerView.visibility = View.GONE
+    private fun observeLiveData() {
+        viewModel.filmler.observe(viewLifecycleOwner) { list ->
+            list?.let {
+                if (it.isNotEmpty()) {
+                    filmRecyclerAdapter.updateList(it.filterNotNull())
+                    binding.filmRecyclerView.visibility = View.VISIBLE
+                    binding.filmHataMesaj.visibility = View.GONE
+                } else {
+                    binding.filmHataMesaj.visibility = View.VISIBLE
+                }
             }
+        }
 
-            else{
+        viewModel.filmHataMesaji.observe(viewLifecycleOwner) { isError ->
+            binding.filmHataMesaj.visibility = if (isError) View.VISIBLE else View.GONE
+        }
 
-                binding.filmHataMesaj.visibility = View.GONE
-
-
-
-            }
-            }
-
-
-        viewModel.filmYukleniyor.observe(viewLifecycleOwner){
-
-
-            if (it){
-
+        viewModel.filmYukleniyor.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
                 binding.filmHataMesaj.visibility = View.GONE
                 binding.filmRecyclerView.visibility = View.GONE
                 binding.filmlerYukleniyor.visibility = View.VISIBLE
-
-            }else{
-
+            } else {
                 binding.filmlerYukleniyor.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun floatingButtonTiklandi(view: View) {
+        popup = PopupMenu(requireContext(), binding.floatingActionButton)
+        val inflater = popup.menuInflater
+        inflater.inflate(R.menu.menu, popup.menu)
+        popup.setOnMenuItemClickListener(this)
+        popup.show()
+    }
+
+    override fun onMovieClicked(movieId: Int?) {
+        movieId?.let {
+            val action = anasayfaFragmentDirections.actionAnasayfaFragmentToFilmDetayFragment(it)
+            findNavController().navigate(action)
+        }
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.exitItem -> {
+                auth.signOut()
+                val action = anasayfaFragmentDirections.actionAnasayfaFragmentToKullaniciFragment()
+                findNavController().navigate(action)
+                return true
             }
 
         }
-
-        }
-
-
-
-
-
-
-
-
-
-
-    fun floatingButtonTiklandi(view: View){
-val popup =PopupMenu(requireContext(),binding.floatingActionButton)
-        val inflater = popup.menuInflater
-        inflater.inflate(R.menu.menu,popup.menu)
-        popup.setOnMenuItemClickListener(this)
-        popup.show()
-
-
+        return false
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-
-        //çıkış yapma
-        if(item?.itemId== R.id.exitItem){
-
-            auth.signOut()
-            val action= anasayfaFragmentDirections.actionAnasayfaFragmentToKullaniciFragment()
-            Navigation.findNavController(requireView()).navigate(action)
-
-
-
-        }
-        return true
-
-    }
-
-
 }

@@ -3,54 +3,46 @@ package com.emreakpinar.filmeet.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.emreakpinar.filmeet.databinding.FilmRecycleRowBinding
-import com.emreakpinar.filmeet.model.Movie
+import com.emreakpinar.filmeet.databinding.HomeRecyclerViewBinding
 import com.emreakpinar.filmeet.model.MovieItem
-
-class filmRecyclerAdapter(val filmListesi : Movie) : RecyclerView.Adapter<filmRecyclerAdapter.filmViewHolder> (){
-
-    class filmViewHolder(val binding : FilmRecycleRowBinding) : RecyclerView.ViewHolder(binding.root){
+import com.emreakpinar.filmeet.util.loadCircleImage
 
 
 
+interface MovieClickListener{
+    fun onMovieClicked(movieId:Int?)
+
+
+}
+
+class FilmRecyclerAdapter(
+    private var filmListesi: List<MovieItem>,
+    private val movieClickListener: MovieClickListener
+) : RecyclerView.Adapter<FilmRecyclerAdapter.FilmViewHolder>()
+{ class FilmViewHolder(val binding: HomeRecyclerViewBinding) : RecyclerView.ViewHolder(binding.root)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmViewHolder {
+        val binding
+        = HomeRecyclerViewBinding.inflate(LayoutInflater.from(parent.context),
+            parent, false)
+        return FilmViewHolder(binding)
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): filmViewHolder {
-
-        val binding =FilmRecycleRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-        return filmViewHolder(binding)
-
-    }
-
     override fun getItemCount(): Int {
-        return filmListesi.size
+         return filmListesi.size
 
     }
+    override fun onBindViewHolder(holder: FilmViewHolder, position: Int) {
+        val movie = filmListesi[position]
+        holder.binding.movieIsim.text = movie.title
+        holder.binding.filmOzet.text = movie.overview
+        holder.binding.rating.text = movie.voteAverage.toString()
+        holder.binding.filmImageView.loadCircleImage(movie.posterPath)
+        holder.binding.root.setOnClickListener {
+            movieClickListener.onMovieClicked(movie.id)
 
-    fun filmListesiGuncelle(yeniFilmListesi : List<MovieItem>){
-
-        filmListesi.clear()
-        filmListesi.addAll(yeniFilmListesi)
-        notifyDataSetChanged()
-
-
-    }
-
-    override fun onBindViewHolder(holder: filmViewHolder, position: Int) {
-        holder.binding.isim.text = filmListesi[position].Title
-        holder.binding.basrol.text=filmListesi[position].Casts.toString()
-        holder.binding.yonetmen.text=filmListesi[position].Director.toString()
-        holder.binding.sure.text=filmListesi[position].RuntimeMinutes.toString()
-        holder.binding.tR.text=filmListesi[position].Genres.toString()
-        holder.binding.yil.text=filmListesi[position].Year.toString()
-
-
-
-      /*  holder.itemView.setOnClickListener{
-
-            val action = anasayfaFragmentDirections.actionAnasayfaFragmentToFilmDetayFragment(filmListesi[position].uuid)
-            Navigation.findNavController(it).navigate(action)
         }
-*/
+    }
+    fun updateList(newList: List<MovieItem>) {
+        filmListesi = newList
+        notifyDataSetChanged()
     }
 }

@@ -3,24 +3,25 @@ package com.emreakpinar.filmeet.roomdb
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.emreakpinar.filmeet.model.Film
+import com.emreakpinar.filmeet.model.Filmler
+import com.emreakpinar.filmeet.model.MovieItem
 
 @Dao
 interface filmDAO {
 
 
-    @Insert
-    suspend fun  insertAll (vararg film: Film): List<Long>
+       @Insert
+       suspend fun  insertAll (vararg film: MovieItem): List<Long>
 
 
-    @Query("SELECT * FROM Film WHERE uuid= :filmID")
-    suspend fun getFilm(filmID : Int)  : Film
+      @Query("SELECT * FROM movie WHERE id =:item")
+        fun getFilm( item: Int)  : MovieItem
 
 
-    @Query ("SELECT * FROM Film")
-    suspend fun  getAllFilm():    List<Film>
+       @Query ("SELECT * FROM movie")
+       suspend fun  getAllFilm():    List<MovieItem>
 
-    @Query("DELETE FROM Film")
-    suspend fun deleteAllFilms()
+       @Query("DELETE FROM movie")
+       suspend fun deleteAllFilms()
 
 }

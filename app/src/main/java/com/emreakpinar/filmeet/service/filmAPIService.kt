@@ -1,6 +1,6 @@
 package com.emreakpinar.filmeet.service
 
-import com.emreakpinar.filmeet.model.Movie
+import com.emreakpinar.filmeet.model.Filmler
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -11,9 +11,9 @@ class filmAPIService {
         .build()
         .create(filmAPI::class.java)
 
-    suspend fun getData(): Movie {
+  /*  suspend fun getData(): Filmler {
 
-        return retrofit.getFilm()
+       // return retrofit.getMovie()
     }
-
+*/
 }

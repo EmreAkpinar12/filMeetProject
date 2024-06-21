@@ -4,18 +4,21 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.emreakpinar.filmeet.model.Film
-import com.emreakpinar.filmeet.model.Movie
+import com.emreakpinar.filmeet.model.MovieItem
 import com.emreakpinar.filmeet.roomdb.filmDataBase
+import com.emreakpinar.filmeet.service.ApiClient
 import com.emreakpinar.filmeet.service.filmAPIService
+import com.emreakpinar.filmeet.util.Constans
 import com.emreakpinar.filmeet.util.ozelSharedPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class anasayfaViewModel(application: Application) : AndroidViewModel(application) {
 
-    val filmler = MutableLiveData<Movie>()
+
+    val filmler = MutableLiveData<List<MovieItem>>()
     val filmHataMesaji = MutableLiveData<Boolean>()
     val filmYukleniyor = MutableLiveData<Boolean>()
 
@@ -24,28 +27,63 @@ class anasayfaViewModel(application: Application) : AndroidViewModel(application
 
     private val guncellemeZamani = 10 * 60000000000L
 
-    fun refreshData() {
+    fun getMovieList() {
 
-        val kaydedilmeZamani = ozelSharedPreferences.zamaniAl()
+        filmYukleniyor.value = true
 
-        if (kaydedilmeZamani != null && kaydedilmeZamani != 0L && System.nanoTime() - kaydedilmeZamani < guncellemeZamani) {
+        viewModelScope.launch {
 
-            verileriRoomdanAl()
+            try {
+                val response = ApiClient.getClient().getFilmList(token = Constans.BEARER_TOKEN)
 
-        } else {
+                if (response.isSuccessful) {
 
-            verileriInternettenAl()
+                    filmler.postValue(response.body()?.movieItems)
+                } else {
+
+                    if (response.message().isNullOrEmpty()) {
+
+                        filmHataMesaji.value = true
+                    } else {
+                        filmHataMesaji.value = true
+                    }
+                }
+            } catch (e: Exception) {
+                filmHataMesaji.value = true
+
+
+            } finally {
+                filmYukleniyor.value = false
+
+            }
         }
 
-
     }
 
-    fun refreshDataFromInternet() {
+    /*  fun refreshData() {
 
-        verileriInternettenAl()
-    }
+          val kaydedilmeZamani = ozelSharedPreferences.zamaniAl()
 
-    private fun verileriRoomdanAl() {
+          if (kaydedilmeZamani != null && kaydedilmeZamani != 0L && System.nanoTime() - kaydedilmeZamani < guncellemeZamani) {
+
+              verileriRoomdanAl()
+
+          } else {
+
+              verileriInternettenAl()
+          }
+
+
+      }
+
+      fun refreshDataFromInternet() {
+
+          verileriInternettenAl()
+      }
+      */
+
+
+    /*private fun verileriRoomdanAl() {
         filmYukleniyor.value = true
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -59,44 +97,42 @@ class anasayfaViewModel(application: Application) : AndroidViewModel(application
 
 
     }
+    */
 
-    private fun verileriInternettenAl() {
-        filmYukleniyor.postValue(true)
+    /* private fun verileriInternettenAl() {
+         filmYukleniyor.postValue(true)
 
-        viewModelScope.launch(Dispatchers.IO) {
+         viewModelScope.launch(Dispatchers.IO) {
 
-            val filmListesi = filmApiServis.getData()
-            filmler.postValue(filmListesi)
-            filmYukleniyor.postValue(false)
+             val filmListesi = filmApiServis.getData()
+             filmler.postValue(filmListesi)
+             filmYukleniyor.postValue(false)
 
-        }
+         }
 
 
-    }
+     }
+     */
 
-    private fun filmlerGoster(filmListesi: List<Film>) {
+    private fun filmlerGoster(filmListesi: List<MovieItem>) {
 
-        //filmler.value = filmListesi
+        filmler.value = filmListesi
         filmHataMesaji.value = false
         filmYukleniyor.value = false
 
     }
 
-    private fun roomaKaydet(filmListesi: List<Film>) {
+    private fun roomaKaydet(filmListesi: List<MovieItem>) {
 
         viewModelScope.launch {
 
             val dao = filmDataBase(getApplication()).filmDao()
             dao.deleteAllFilms()
-            val uuidListesi = dao.insertAll(*filmListesi.toTypedArray())
-            var i = 0
-            while (i < filmListesi.size) {
-                filmListesi[i].uuid = uuidListesi[i].toInt()
-                i = i + 1
-            }
+
 
         }
 
         ozelSharedPreferences.zamaniKaydet(System.nanoTime())
     }
+
 }

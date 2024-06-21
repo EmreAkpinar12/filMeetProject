@@ -8,31 +8,113 @@
     <fragment
         android:id="@+id/kullaniciFragment"
         android:name="com.emreakpinar.filmeet.view.kullaniciFragment"
-        android:label="fragment_kullanici"
-        tools:layout="@layout/fragment_kullanici" >
+        android:label="Giriş"
+        tools:layout="@layout/fragment_kullanici">
         <action
             android:id="@+id/action_kullaniciFragment_to_anasayfaFragment"
             app:destination="@id/anasayfaFragment" />
+        <action
+            android:id="@+id/action_kullaniciFragment_to_userNameFragment"
+            app:destination="@id/userNameFragment" />
+        <action
+            android:id="@+id/action_kullaniciFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/anasayfaFragment"
         android:name="com.emreakpinar.filmeet.view.anasayfaFragment"
-        android:label="anasayfa_Fragment"
+        android:label="Ana Sayfa"
         tools:layout="@layout/fragment_anasayfa">
         <action
             android:id="@+id/action_anasayfaFragment_to_kullaniciFragment"
             app:destination="@id/kullaniciFragment" />
         <action
             android:id="@+id/action_anasayfaFragment_to_filmDetayFragment"
-            app:destination="@id/filmDetayFragment" />
+            app:destination="@id/FilmDetayFragment" />
+        <action
+            android:id="@+id/action_anasayfaFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
+        <action
+            android:id="@+id/action_anasayfaFragment_to_usersFragment"
+            app:destination="@id/usersFragment" />
+        <action
+            android:id="@+id/action_anasayfaFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+        <action
+            android:id="@+id/action_anasayfaFragment_to_friendsFragment"
+            app:destination="@id/friendsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/filmDetayFragment"
-        android:name="com.emreakpinar.filmeet.view.filmDetayFragment"
-        android:label="fragment_film_detay"
-        tools:layout="@layout/fragment_film_detay" >
+        android:id="@+id/FilmDetayFragment"
+        android:name="com.emreakpinar.filmeet.view.FilmDetayFragment"
+        android:label="detay"
+        tools:layout="@layout/fragment_film_detay">
         <argument
-            android:name="filmId"
+            android:name="movieId"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_FilmDetayFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
+        <action
+            android:id="@+id/action_FilmDetayFragment_to_blankFragment"
+            app:destination="@id/blankFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.emreakpinar.filmeet.view.FavoriteFragment"
+        android:label="fragment_favorite"
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_FilmDetayFragment"
+            app:destination="@id/FilmDetayFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/usersFragment"
+        android:name="com.emreakpinar.filmeet.view.UsersFragment"
+        android:label="UsersFragment" >
+        <action
+            android:id="@+id/action_usersFragment_to_friendsFragment"
+            app:destination="@id/friendsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/friendsFragment"
+        android:name="com.emreakpinar.filmeet.view.FriendsFragment"
+        android:label="FriendsFragment" >
+        <action
+            android:id="@+id/action_friendsFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+        <action
+            android:id="@+id/action_friendsFragment_to_anasayfaFragment"
+            app:destination="@id/anasayfaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userNameFragment"
+        android:name="com.emreakpinar.filmeet.view.UserNameFragment"
+        android:label="fragment_user_name"
+        tools:layout="@layout/fragment_user_name" >
+        <action
+            android:id="@+id/action_userNameFragment_to_anasayfaFragment"
+            app:destination="@id/anasayfaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.emreakpinar.filmeet.view.ForgotPasswordFragment"
+        android:label="ForgotPasswordFragment" >
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_kullaniciFragment"
+            app:destination="@id/kullaniciFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.emreakpinar.filmeet.view.ChatFragment"
+        android:label="ChatFragment" >
+        <argument
+            android:name="frienUid"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/blankFragment"
+        android:name="com.emreakpinar.filmeet.view.BlankFragment"
+        android:label="fragment_blank"
+        tools:layout="@layout/fragment_blank" />
 </navigation>

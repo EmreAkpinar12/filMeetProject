@@ -1,11 +1,18 @@
 package com.emreakpinar.filmeet.service
 
-import com.emreakpinar.filmeet.model.Movie
+import com.emreakpinar.filmeet.model.FilmDetayResponse
+import com.emreakpinar.filmeet.model.Filmler
+import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Path
 
 interface filmAPI {
-    // https://raw.githubusercontent.com/softbreak/IMDB-Top-1000-Json/main/movies.json
-    @GET("softbreak/IMDB-Top-1000-Json/main/movies.json")
+    @GET("popular")
 
-    suspend fun getFilm(): Movie
+    suspend fun getFilmList(@Header("Authorization")token : String): Response<Filmler>
+
+    @GET("{movieId}")
+
+    suspend fun  getMovieDetay(@Path("movieId")movieId : String, @Header("Authorization")token: String):Response<FilmDetayResponse>
 }
